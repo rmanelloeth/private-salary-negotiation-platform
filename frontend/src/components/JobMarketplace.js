@@ -34,6 +34,13 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     if (!provider || !account || !contractAddresses.JobMarketplace) return;
     
     try {
+      // Проверяем сеть
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 11155111) {
+        setError('Please switch to Sepolia Testnet (Chain ID: 11155111)');
+        return;
+      }
+
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         contractAddresses.JobMarketplace,
@@ -41,8 +48,18 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
         signer
       );
       
-      // Получаем количество вакансий
-      const jobCount = await contract.jobCounter();
+      // Проверяем что контракт существует (проверяем jobCounter)
+      let jobCount;
+      try {
+        jobCount = await contract.jobCounter();
+      } catch (err) {
+        if (err.code === 'CALL_EXCEPTION') {
+          setError('Contract not found. Please check that you are on Sepolia Testnet and contract is deployed.');
+          return;
+        }
+        throw err;
+      }
+
       const jobsList = [];
       
       // Загружаем все вакансии
@@ -62,14 +79,21 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
             });
           }
         } catch (err) {
-          console.log(`Job ${i} not found or error:`, err);
+          // Игнорируем ошибки для несуществующих вакансий
+          if (err.code !== 'CALL_EXCEPTION') {
+            console.log(`Job ${i} error:`, err);
+          }
         }
       }
       
       setJobs(jobsList);
     } catch (error) {
       console.error('Error loading jobs:', error);
-      setError('Failed to load jobs: ' + error.message);
+      if (error.code === 'CALL_EXCEPTION') {
+        setError('Contract call failed. Please check: 1) You are on Sepolia Testnet, 2) Contract is deployed, 3) Contract address is correct.');
+      } else {
+        setError('Failed to load jobs: ' + error.message);
+      }
     }
   };
 
@@ -95,12 +119,28 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
         throw new Error('Min salary cannot be greater than max salary');
       }
 
+      // Проверяем сеть
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 11155111) {
+        throw new Error('Please switch to Sepolia Testnet (Chain ID: 11155111)');
+      }
+
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         contractAddresses.JobMarketplace,
         JobMarketplaceABI,
         signer
       );
+
+      // Проверяем что контракт существует перед вызовом
+      try {
+        await contract.jobCounter();
+      } catch (err) {
+        if (err.code === 'CALL_EXCEPTION') {
+          throw new Error('Contract not found. Please check network and contract address.');
+        }
+        throw err;
+      }
 
       // Вызываем контракт - MetaMask откроется для подписи транзакции
       const tx = await contract.createJob(
@@ -122,6 +162,10 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     } catch (err) {
       if (err.code === 4001) {
         setError('Transaction rejected by user');
+      } else if (err.code === 'CALL_EXCEPTION') {
+        setError('Contract call failed. Check: 1) Sepolia network, 2) Contract deployed, 3) Correct address');
+      } else if (err.message.includes('network')) {
+        setError('Network error: ' + err.message);
       } else {
         setError(err.message || 'Failed to create job');
       }
@@ -179,6 +223,10 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     } catch (err) {
       if (err.code === 4001) {
         setError('Transaction rejected by user');
+      } else if (err.code === 'CALL_EXCEPTION') {
+        setError('Contract call failed. Check: 1) Sepolia network, 2) Contract deployed, 3) Job exists');
+      } else if (err.message.includes('network')) {
+        setError('Network error: ' + err.message);
       } else {
         setError(err.message || 'Failed to submit application');
       }

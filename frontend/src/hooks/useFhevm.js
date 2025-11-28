@@ -35,9 +35,62 @@ export const useFhevm = () => {
       });
   }, []);
 
+  const SEPOLIA_CHAIN_ID = '0xaa36a7'; // 11155111 в hex
+  const SEPOLIA_NETWORK = {
+    chainId: SEPOLIA_CHAIN_ID,
+    chainName: 'Sepolia',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc.sepolia.org'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io'],
+  };
+
+  const switchToSepolia = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: SEPOLIA_CHAIN_ID }],
+      });
+    } catch (switchError) {
+      // Если сеть не добавлена, добавляем её
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [SEPOLIA_NETWORK],
+          });
+        } catch (addError) {
+          throw new Error('Failed to add Sepolia network');
+        }
+      } else {
+        throw switchError;
+      }
+    }
+  };
+
+  const checkNetwork = async () => {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== SEPOLIA_CHAIN_ID) {
+      const shouldSwitch = window.confirm(
+        'Please switch to Sepolia Testnet to use this dApp. Switch now?'
+      );
+      if (shouldSwitch) {
+        await switchToSepolia();
+      } else {
+        throw new Error('Please switch to Sepolia Testnet');
+      }
+    }
+  };
+
   const connect = async () => {
     try {
       if (typeof window.ethereum !== 'undefined') {
+        // Проверяем и переключаем на Sepolia
+        await checkNetwork();
+
         // Запрашиваем доступ к аккаунту
         const accounts = await window.ethereum.request({
           method: 'eth_requestAccounts',
@@ -67,6 +120,16 @@ export const useFhevm = () => {
               setInstance(null);
               setProvider(null);
               setPublicKey(null);
+            } else {
+              connect();
+            }
+          });
+
+          // Слушаем изменения сети
+          window.ethereum.on('chainChanged', (chainId) => {
+            if (chainId !== SEPOLIA_CHAIN_ID) {
+              alert('Please switch to Sepolia Testnet');
+              setIsConnected(false);
             } else {
               connect();
             }

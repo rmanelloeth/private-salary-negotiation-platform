@@ -19,6 +19,13 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
     if (!provider || !account || !contractAddresses.SalaryNegotiation) return;
     
     try {
+      // Проверяем сеть
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 11155111) {
+        setError('Please switch to Sepolia Testnet (Chain ID: 11155111)');
+        return;
+      }
+
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         contractAddresses.SalaryNegotiation,
@@ -27,7 +34,17 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
       );
       
       // Получаем переговоры пользователя
-      const negotiationIds = await contract.getUserNegotiations(account);
+      let negotiationIds;
+      try {
+        negotiationIds = await contract.getUserNegotiations(account);
+      } catch (err) {
+        if (err.code === 'CALL_EXCEPTION') {
+          setError('Contract not found. Please check that you are on Sepolia Testnet.');
+          return;
+        }
+        throw err;
+      }
+
       const negotiationsList = [];
       
       for (const id of negotiationIds) {
@@ -49,14 +66,20 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
             });
           }
         } catch (err) {
-          console.log(`Negotiation ${id} error:`, err);
+          if (err.code !== 'CALL_EXCEPTION') {
+            console.log(`Negotiation ${id} error:`, err);
+          }
         }
       }
       
       setNegotiations(negotiationsList);
     } catch (error) {
       console.error('Error loading negotiations:', error);
-      setError('Failed to load negotiations: ' + error.message);
+      if (error.code === 'CALL_EXCEPTION') {
+        setError('Contract call failed. Please check: 1) Sepolia network, 2) Contract deployed');
+      } else {
+        setError('Failed to load negotiations: ' + error.message);
+      }
     }
   };
 
@@ -74,12 +97,28 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
         throw new Error('Contract address not set');
       }
 
+      // Проверяем сеть
+      const network = await provider.getNetwork();
+      if (Number(network.chainId) !== 11155111) {
+        throw new Error('Please switch to Sepolia Testnet (Chain ID: 11155111)');
+      }
+
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         contractAddresses.SalaryNegotiation,
         SalaryNegotiationABI,
         signer
       );
+
+      // Проверяем что контракт существует
+      try {
+        await contract.getUserNegotiations(account);
+      } catch (err) {
+        if (err.code === 'CALL_EXCEPTION') {
+          throw new Error('Contract not found. Please check network and contract address.');
+        }
+        throw err;
+      }
 
       const tx = await contract.acceptOffer(negotiationId);
       setSuccess('Transaction sent! Waiting for confirmation...');
@@ -89,6 +128,10 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
     } catch (err) {
       if (err.code === 4001) {
         setError('Transaction rejected by user');
+      } else if (err.code === 'CALL_EXCEPTION') {
+        setError('Contract call failed. Check: 1) Sepolia network, 2) Contract deployed');
+      } else if (err.message.includes('network')) {
+        setError('Network error: ' + err.message);
       } else {
         setError(err.message || 'Failed to accept offer');
       }
