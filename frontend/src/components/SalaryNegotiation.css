@@ -1,0 +1,61 @@
+.negotiation-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+}
+
+.negotiation-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.negotiation-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.negotiations-section {
+  margin-top: 2rem;
+}
+
+.negotiation-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.negotiation-item {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.negotiation-item h3 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.negotiation-info {
+  margin-bottom: 1.5rem;
+}
+
+.negotiation-info p {
+  color: #666;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.negotiation-info strong {
+  color: #333;
+}
+
+.negotiation-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+

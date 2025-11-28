@@ -1,0 +1,266 @@
+.App {
+  min-height: 100vh;
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+  text-decoration: none;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #667eea;
+}
+
+.connect-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-address {
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #333;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.connect-prompt {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin-top: 4rem;
+}
+
+.connect-prompt h1 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.connect-prompt p {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.connect-btn-large {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.connect-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.job-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.job-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid #667eea;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.job-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.job-item h3 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.job-item p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.job-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+

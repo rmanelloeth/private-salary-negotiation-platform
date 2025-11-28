@@ -1,0 +1,11 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployer": "0x4039438f00A5996db91b8Ab359420D6f78dfdBBf",
+  "contracts": {
+    "JobMarketplace": "0x57f315E773788e087f9123ccE6515BeD9BD7520F",
+    "SalaryNegotiation": "0x08faCE30dc5538344ae275d128D2b92fFb8a492E"
+  },
+  "timestamp": "2025-11-28T15:07:25.849Z"
+}
+
