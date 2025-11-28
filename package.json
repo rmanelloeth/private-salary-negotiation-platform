@@ -1,7 +1,7 @@
 {
-  "name": "zama-salary-negotiation-dapp",
+  "name": "private-salary-negotiation-platform",
   "version": "1.0.0",
-  "description": "Private Salary Negotiation & Job Matching Platform using Zama FHEVM",
+  "description": "Private Salary Negotiation & Job Matching Platform using FHEVM",
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
@@ -13,7 +13,7 @@
     "frontend": "cd frontend && npm start",
     "build": "cd frontend && npm run build"
   },
-  "keywords": ["zama", "fhevm", "blockchain", "privacy", "salary"],
+  "keywords": ["fhevm", "blockchain", "privacy", "salary", "encryption"],
   "author": "",
   "license": "MIT",
   "devDependencies": {

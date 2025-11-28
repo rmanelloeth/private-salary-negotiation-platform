@@ -23,7 +23,7 @@ function App() {
         <nav className="navbar">
           <div className="nav-container">
             <Link to="/" className="nav-logo">
-              🔐 Zama Salary Platform
+              🔐 Private Salary Platform
             </Link>
             <div className="nav-menu">
               <Link to="/" className="nav-link">Dashboard</Link>
@@ -47,7 +47,7 @@ function App() {
         <main className="main-content">
           {!isConnected ? (
             <div className="connect-prompt">
-              <h1>Welcome to Zama Salary Negotiation Platform</h1>
+              <h1>Welcome to Private Salary Negotiation Platform</h1>
               <p>Connect your wallet to get started</p>
               <button onClick={connect} className="connect-btn-large">
                 Connect Wallet

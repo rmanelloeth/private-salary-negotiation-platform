@@ -12,7 +12,7 @@ function question(query) {
 }
 
 async function setup() {
-  console.log('🔧 Setting up Zama Salary Negotiation Platform\n');
+  console.log('🔧 Setting up Private Salary Negotiation Platform\n');
 
   // Check if .env exists
   const envPath = path.join(__dirname, '..', '.env');

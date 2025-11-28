@@ -73,7 +73,7 @@ git init
 git add .
 
 # Первый коммит
-git commit -m "Initial commit: Zama Salary Negotiation Platform"
+git commit -m "Initial commit: Private Salary Negotiation Platform"
 
 # Добавьте remote (когда получите URL от пользователя)
 # git remote add origin https://github.com/username/repo.git

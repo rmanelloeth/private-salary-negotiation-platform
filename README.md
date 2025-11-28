@@ -1,10 +1,10 @@
-# Zama Salary Negotiation Platform
+# Private Salary Negotiation Platform
 
-A decentralized application (dApp) for private salary negotiations and job matching using Zama's Fully Homomorphic Encryption (FHE) technology. This platform enables employers and candidates to negotiate salaries with complete confidentiality, ensuring that sensitive financial information remains encrypted throughout the entire process.
+A decentralized application (dApp) for private salary negotiations and job matching using Fully Homomorphic Encryption (FHE) technology. This platform enables employers and candidates to negotiate salaries with complete confidentiality, ensuring that sensitive financial information remains encrypted throughout the entire process.
 
 ## 🎯 Project Overview
 
-This platform leverages Zama's FHEVM (Fully Homomorphic Encryption Virtual Machine) to create a privacy-preserving job marketplace where:
+This platform leverages FHEVM (Fully Homomorphic Encryption Virtual Machine) to create a privacy-preserving job marketplace where:
 
 - **Employers** can post job listings with encrypted salary ranges
 - **Candidates** can submit applications with encrypted salary expectations
@@ -64,8 +64,8 @@ Built with React and modern web3 technologies:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/zama-salary-negotiation-platform.git
-cd zama-salary-negotiation-platform
+git clone https://github.com/yourusername/private-salary-negotiation-platform.git
+cd private-salary-negotiation-platform
 ```
 
 2. **Install dependencies:**
@@ -340,4 +340,4 @@ For issues, questions, or contributions:
 
 ---
 
-**Built with ❤️ using Zama FHEVM technology**
+**Built with ❤️ using FHEVM technology**

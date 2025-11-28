@@ -40,7 +40,7 @@
 ```bash
 git init
 git add .
-git commit -m "Initial commit: Zama Salary Negotiation Platform"
+git commit -m "Initial commit: Private Salary Negotiation Platform"
 # Затем добавьте remote и запушьте
 ```
 

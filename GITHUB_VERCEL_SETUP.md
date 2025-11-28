@@ -19,7 +19,7 @@ git status
 # git rm --cached .env
 
 # Сделайте первый коммит
-git commit -m "Initial commit: Zama Salary Negotiation Platform"
+git commit -m "Initial commit: Private Salary Negotiation Platform"
 ```
 
 ### Шаг 2: Создание репозитория на GitHub
@@ -27,8 +27,8 @@ git commit -m "Initial commit: Zama Salary Negotiation Platform"
 1. Зайдите на [github.com](https://github.com)
 2. Нажмите "New repository"
 3. Заполните:
-   - **Repository name:** `zama-salary-negotiation-platform` (или любое другое имя)
-   - **Description:** "Private Salary Negotiation Platform using Zama FHEVM"
+   - **Repository name:** `private-salary-negotiation-platform` (или любое другое имя)
+   - **Description:** "Private Salary Negotiation Platform using FHEVM"
    - **Visibility:** Public или Private (на ваш выбор)
    - **НЕ** добавляйте README, .gitignore или license (они уже есть)
 4. Нажмите "Create repository"
@@ -37,7 +37,7 @@ git commit -m "Initial commit: Zama Salary Negotiation Platform"
 
 ```bash
 # Добавьте remote (замените YOUR_USERNAME на ваш GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/zama-salary-negotiation-platform.git
+git remote add origin https://github.com/YOUR_USERNAME/private-salary-negotiation-platform.git
 
 # Переименуйте ветку в main (если нужно)
 git branch -M main
