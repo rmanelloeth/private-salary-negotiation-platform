@@ -45,40 +45,69 @@ REACT_APP_SALARYNEGOTIATION_ADDRESS=0x08faCE30dc5538344ae275d128D2b92fFb8a492E
 ## 📋 ABI контрактов
 
 ### JobMarketplace ABI
+
+**⚠️ IMPORTANT: Use the ABI from `frontend/src/contracts/JobMarketplaceABI.json` - it's extracted from compiled artifacts and matches the deployed contract exactly.**
+
+**Key Function Signatures:**
+
+#### createJob
+```solidity
+function createJob(
+    uint32 _minSalary,      // Plain number (NOT wei), e.g. 50000
+    uint32 _maxSalary,      // Plain number (NOT wei), e.g. 100000
+    string calldata _jobTitle,    // Regular string
+    string calldata _description  // Regular string
+) public returns (uint256)
+```
+
+**Function Selector:** `0x2042ba3a`
+
+**ABI Entry:**
 ```json
-[
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true, "internalType": "uint256", "name": "jobId", "type": "uint256"},
-      {"indexed": true, "internalType": "address", "name": "employer", "type": "address"},
-      {"indexed": false, "internalType": "string", "name": "jobTitle", "type": "string"}
-    ],
-    "name": "JobCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true, "internalType": "uint256", "name": "applicationId", "type": "uint256"},
-      {"indexed": true, "internalType": "uint256", "name": "jobId", "type": "uint256"},
-      {"indexed": true, "internalType": "address", "name": "candidate", "type": "address"}
-    ],
-    "name": "ApplicationSubmitted",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint32", "name": "_minSalary", "type": "uint32"},
-      {"internalType": "uint32", "name": "_maxSalary", "type": "uint32"},
-      {"internalType": "string", "name": "_jobTitle", "type": "string"},
-      {"internalType": "string", "name": "_description", "type": "string"}
-    ],
-    "name": "createJob",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
+{
+  "inputs": [
+    {"internalType": "uint32", "name": "_minSalary", "type": "uint32"},
+    {"internalType": "uint32", "name": "_maxSalary", "type": "uint32"},
+    {"internalType": "string", "name": "_jobTitle", "type": "string"},
+    {"internalType": "string", "name": "_description", "type": "string"}
+  ],
+  "name": "createJob",
+  "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}
+```
+
+#### applyForJob
+```solidity
+function applyForJob(
+    uint256 _jobId,         // Job ID number
+    uint32 _minExpected,     // Plain number (NOT wei)
+    uint32 _maxExpected      // Plain number (NOT wei)
+) public returns (uint256)
+```
+
+**Function Selector:** `0x8e15f473`
+
+**ABI Entry:**
+```json
+{
+  "inputs": [
+    {"internalType": "uint256", "name": "_jobId", "type": "uint256"},
+    {"internalType": "uint32", "name": "_minExpected", "type": "uint32"},
+    {"internalType": "uint32", "name": "_maxExpected", "type": "uint32"}
+  ],
+  "name": "applyForJob",
+  "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}
+```
+
+**⚠️ CRITICAL NOTES:**
+- Salary values are `uint32` - **plain numbers, NOT wei** (e.g., `50000` means 50,000, not 50,000 wei)
+- Title and description are `string` type (not bytes32 or bytes)
+- All ABI entries must match exactly - use the files from `frontend/src/contracts/`
   {
     "inputs": [
       {"internalType": "uint256", "name": "_jobId", "type": "uint256"},
@@ -140,19 +169,34 @@ REACT_APP_SALARYNEGOTIATION_ADDRESS=0x08faCE30dc5538344ae275d128D2b92fFb8a492E
 ```
 
 ### SalaryNegotiation ABI
+
+**⚠️ IMPORTANT: Use the ABI from `frontend/src/contracts/SalaryNegotiationABI.json` - it's extracted from compiled artifacts.**
+
+**Key Function Signatures:**
+
+#### startNegotiation
+```solidity
+function startNegotiation(
+    address _candidate,     // Candidate wallet address
+    uint256 _jobId,         // Job ID
+    uint32 _initialOffer    // Plain number (NOT wei)
+) public returns (uint256)
+```
+
+**ABI Entry:**
 ```json
-[
-  {
-    "inputs": [
-      {"internalType": "address", "name": "_candidate", "type": "address"},
-      {"internalType": "uint256", "name": "_jobId", "type": "uint256"},
-      {"internalType": "uint32", "name": "_initialOffer", "type": "uint32"}
-    ],
-    "name": "startNegotiation",
-    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
+{
+  "inputs": [
+    {"internalType": "address", "name": "_candidate", "type": "address"},
+    {"internalType": "uint256", "name": "_jobId", "type": "uint256"},
+    {"internalType": "uint32", "name": "_initialOffer", "type": "uint32"}
+  ],
+  "name": "startNegotiation",
+  "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}
+```
   {
     "inputs": [{"internalType": "uint256", "name": "_negotiationId", "type": "uint256"}],
     "name": "acceptOffer",
@@ -411,13 +455,16 @@ const contract = new ethers.Contract(
 ```javascript
 const createJob = async (minSalary, maxSalary, title, description) => {
   try {
+    // ВАЖНО: minSalary и maxSalary - это uint32, plain numbers (NOT wei)
+    // Пример: 50000 означает 50,000, а не 50,000 wei
+    
     // Вызываем функцию контракта
     // MetaMask автоматически откроется для подписи
     const tx = await contract.createJob(
-      minSalary,      // uint32
-      maxSalary,      // uint32
-      title,          // string
-      description     // string
+      parseInt(minSalary),  // uint32 - конвертируем в число
+      parseInt(maxSalary),  // uint32 - конвертируем в число
+      title,                // string - обычная строка
+      description           // string - обычная строка
     );
     
     // Показываем статус
@@ -433,6 +480,9 @@ const createJob = async (minSalary, maxSalary, title, description) => {
       // Пользователь отклонил транзакцию
       throw new Error('Transaction rejected by user');
     }
+    if (error.code === 'CALL_EXCEPTION') {
+      throw new Error('Contract call failed. Check network and contract address.');
+    }
     throw error;
   }
 };
@@ -442,10 +492,11 @@ const createJob = async (minSalary, maxSalary, title, description) => {
 ```javascript
 const applyForJob = async (jobId, minExpected, maxExpected) => {
   try {
+    // ВАЖНО: minExpected и maxExpected - это uint32, plain numbers (NOT wei)
     const tx = await contract.applyForJob(
-      jobId,          // uint256
-      minExpected,    // uint32
-      maxExpected     // uint32
+      parseInt(jobId),        // uint256 - конвертируем в число
+      parseInt(minExpected),  // uint32 - конвертируем в число
+      parseInt(maxExpected)  // uint32 - конвертируем в число
     );
     
     await tx.wait();
@@ -453,6 +504,9 @@ const applyForJob = async (jobId, minExpected, maxExpected) => {
   } catch (error) {
     if (error.code === 4001) {
       throw new Error('Transaction rejected by user');
+    }
+    if (error.code === 'CALL_EXCEPTION') {
+      throw new Error('Contract call failed. Check network and job exists.');
     }
     throw error;
   }
