@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import JobMarketplaceABI from '../contracts/JobMarketplaceABI.json';
 import './JobMarketplace.css';
 
 const JobMarketplace = ({ instance, provider, publicKey, account, contractAddresses }) => {
@@ -30,16 +31,46 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
   }, [account, contractAddresses]);
 
   const loadJobs = async () => {
-    // Загрузка вакансий с контракта
-    // Здесь будет интеграция с контрактом
-    setJobs([]);
-  };
-
-  const encryptValue = async (value) => {
-    if (!instance || !publicKey) {
-      throw new Error('FHEVM not initialized');
+    if (!provider || !account || !contractAddresses.JobMarketplace) return;
+    
+    try {
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddresses.JobMarketplace,
+        JobMarketplaceABI,
+        signer
+      );
+      
+      // Получаем количество вакансий
+      const jobCount = await contract.jobCounter();
+      const jobsList = [];
+      
+      // Загружаем все вакансии
+      for (let i = 0; i < jobCount; i++) {
+        try {
+          const jobData = await contract.getJob(i);
+          if (jobData.isActive) {
+            jobsList.push({
+              id: i,
+              employer: jobData.employer,
+              minSalary: jobData.minSalary.toString(),
+              maxSalary: jobData.maxSalary.toString(),
+              title: jobData.jobTitle,
+              description: jobData.description,
+              isActive: jobData.isActive,
+              createdAt: jobData.createdAt.toString(),
+            });
+          }
+        } catch (err) {
+          console.log(`Job ${i} not found or error:`, err);
+        }
+      }
+      
+      setJobs(jobsList);
+    } catch (error) {
+      console.error('Error loading jobs:', error);
+      setError('Failed to load jobs: ' + error.message);
     }
-    return instance.encrypt32(parseInt(value), publicKey);
   };
 
   const createJob = async (e) => {
@@ -49,24 +80,51 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     setLoading(true);
 
     try {
-      if (!instance || !publicKey) {
-        throw new Error('FHEVM not initialized');
+      if (!provider || !account) {
+        throw new Error('Wallet not connected');
       }
 
-      // Шифруем значения зарплат
-      const encryptedMin = await encryptValue(jobForm.minSalary);
-      const encryptedMax = await encryptValue(jobForm.maxSalary);
+      if (!contractAddresses.JobMarketplace) {
+        throw new Error('Contract address not set');
+      }
 
-      // Здесь будет вызов контракта
-      // const contract = new ethers.Contract(...);
-      // await contract.createJob(encryptedMin, encryptedMax, jobForm.title, jobForm.description);
+      const minSalary = parseInt(jobForm.minSalary);
+      const maxSalary = parseInt(jobForm.maxSalary);
 
+      if (minSalary > maxSalary) {
+        throw new Error('Min salary cannot be greater than max salary');
+      }
+
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddresses.JobMarketplace,
+        JobMarketplaceABI,
+        signer
+      );
+
+      // Вызываем контракт - MetaMask откроется для подписи транзакции
+      const tx = await contract.createJob(
+        minSalary,
+        maxSalary,
+        jobForm.title,
+        jobForm.description
+      );
+
+      setSuccess('Transaction sent! Waiting for confirmation...');
+      
+      // Ждем подтверждения транзакции
+      await tx.wait();
+      
       setSuccess('Job created successfully!');
       setJobForm({ title: '', description: '', minSalary: '', maxSalary: '' });
       setShowCreateForm(false);
       loadJobs();
     } catch (err) {
-      setError(err.message || 'Failed to create job');
+      if (err.code === 4001) {
+        setError('Transaction rejected by user');
+      } else {
+        setError(err.message || 'Failed to create job');
+      }
       console.error('Error creating job:', err);
     } finally {
       setLoading(false);
@@ -80,24 +138,50 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     setLoading(true);
 
     try {
-      if (!instance || !publicKey) {
-        throw new Error('FHEVM not initialized');
+      if (!provider || !account) {
+        throw new Error('Wallet not connected');
       }
 
-      // Шифруем ожидания
-      const encryptedMin = await encryptValue(applicationForm.minExpected);
-      const encryptedMax = await encryptValue(applicationForm.maxExpected);
+      if (!contractAddresses.JobMarketplace) {
+        throw new Error('Contract address not set');
+      }
 
-      // Здесь будет вызов контракта
-      // const contract = new ethers.Contract(...);
-      // await contract.applyForJob(jobId, encryptedMin, encryptedMax);
+      const minExpected = parseInt(applicationForm.minExpected);
+      const maxExpected = parseInt(applicationForm.maxExpected);
 
+      if (minExpected > maxExpected) {
+        throw new Error('Min expected cannot be greater than max expected');
+      }
+
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddresses.JobMarketplace,
+        JobMarketplaceABI,
+        signer
+      );
+
+      // Вызываем контракт - MetaMask откроется для подписи транзакции
+      const tx = await contract.applyForJob(
+        jobId,
+        minExpected,
+        maxExpected
+      );
+
+      setSuccess('Transaction sent! Waiting for confirmation...');
+      
+      // Ждем подтверждения транзакции
+      await tx.wait();
+      
       setSuccess('Application submitted successfully!');
       setApplicationForm({ minExpected: '', maxExpected: '' });
       setShowApplyForm(null);
       loadJobs();
     } catch (err) {
-      setError(err.message || 'Failed to submit application');
+      if (err.code === 4001) {
+        setError('Transaction rejected by user');
+      } else {
+        setError(err.message || 'Failed to submit application');
+      }
       console.error('Error applying for job:', err);
     } finally {
       setLoading(false);
@@ -139,7 +223,7 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Min Salary (encrypted)</label>
+                <label>Min Salary</label>
                 <input
                   type="number"
                   value={jobForm.minSalary}
@@ -148,7 +232,7 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
                 />
               </div>
               <div className="form-group">
-                <label>Max Salary (encrypted)</label>
+                <label>Max Salary</label>
                 <input
                   type="number"
                   value={jobForm.maxSalary}
