@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import SalaryNegotiationABI from '../contracts/SalaryNegotiationABI.json';
 import './SalaryNegotiation.css';
 
 const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAddresses }) => {
@@ -15,15 +16,86 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
   }, [account, contractAddresses]);
 
   const loadNegotiations = async () => {
-    // Загрузка переговоров с контракта
-    setNegotiations([]);
+    if (!provider || !account || !contractAddresses.SalaryNegotiation) return;
+    
+    try {
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddresses.SalaryNegotiation,
+        SalaryNegotiationABI,
+        signer
+      );
+      
+      // Получаем переговоры пользователя
+      const negotiationIds = await contract.getUserNegotiations(account);
+      const negotiationsList = [];
+      
+      for (const id of negotiationIds) {
+        try {
+          const negotiationData = await contract.getNegotiation(id);
+          if (negotiationData.isActive || negotiationData.employerAccepted || negotiationData.candidateAccepted) {
+            negotiationsList.push({
+              id: id.toString(),
+              employer: negotiationData.employer,
+              candidate: negotiationData.candidate,
+              jobId: negotiationData.jobId.toString(),
+              employerOffer: negotiationData.employerOffer.toString(),
+              candidateCounter: negotiationData.candidateCounter.toString(),
+              employerAccepted: negotiationData.employerAccepted,
+              candidateAccepted: negotiationData.candidateAccepted,
+              isActive: negotiationData.isActive,
+              createdAt: negotiationData.createdAt.toString(),
+              lastUpdated: negotiationData.lastUpdated.toString(),
+            });
+          }
+        } catch (err) {
+          console.log(`Negotiation ${id} error:`, err);
+        }
+      }
+      
+      setNegotiations(negotiationsList);
+    } catch (error) {
+      console.error('Error loading negotiations:', error);
+      setError('Failed to load negotiations: ' + error.message);
+    }
   };
 
-  const encryptValue = async (value) => {
-    if (!instance || !publicKey) {
-      throw new Error('FHEVM not initialized');
+  const acceptOffer = async (negotiationId) => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      if (!provider || !account) {
+        throw new Error('Wallet not connected');
+      }
+
+      if (!contractAddresses.SalaryNegotiation) {
+        throw new Error('Contract address not set');
+      }
+
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddresses.SalaryNegotiation,
+        SalaryNegotiationABI,
+        signer
+      );
+
+      const tx = await contract.acceptOffer(negotiationId);
+      setSuccess('Transaction sent! Waiting for confirmation...');
+      await tx.wait();
+      setSuccess('Offer accepted successfully!');
+      loadNegotiations();
+    } catch (err) {
+      if (err.code === 4001) {
+        setError('Transaction rejected by user');
+      } else {
+        setError(err.message || 'Failed to accept offer');
+      }
+      console.error('Error accepting offer:', err);
+    } finally {
+      setLoading(false);
     }
-    return instance.encrypt32(parseInt(value), publicKey);
   };
 
   return (
@@ -56,8 +128,13 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
                 </div>
                 {negotiation.isActive && (
                   <div className="negotiation-actions">
-                    <button className="btn">Update Offer</button>
-                    <button className="btn">Accept Offer</button>
+                    <button 
+                      className="btn" 
+                      onClick={() => acceptOffer(negotiation.id)}
+                      disabled={loading}
+                    >
+                      {loading ? 'Processing...' : 'Accept Offer'}
+                    </button>
                   </div>
                 )}
               </div>
