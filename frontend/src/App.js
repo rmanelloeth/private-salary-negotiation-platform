@@ -23,7 +23,7 @@ function App() {
         <nav className="navbar">
           <div className="nav-container">
             <Link to="/" className="nav-logo">
-              🔐 Private Salary Platform
+              SalaryLock
             </Link>
             <div className="nav-menu">
               <Link to="/" className="nav-link">Dashboard</Link>
@@ -47,8 +47,9 @@ function App() {
         <main className="main-content">
           {!isConnected ? (
             <div className="connect-prompt">
-              <h1>Welcome to Private Salary Negotiation Platform</h1>
-              <p>Connect your wallet to get started</p>
+              <h1>Welcome to SalaryLock</h1>
+              <p>Private salary negotiations at your fingertips</p>
+              <p style={{fontSize: '1rem', marginTop: '1rem', opacity: 0.8}}>Connect your wallet to get started</p>
               <button onClick={connect} className="connect-btn-large">
                 Connect Wallet
               </button>
@@ -61,6 +62,36 @@ function App() {
             </Routes>
           )}
         </main>
+        
+        <footer className="app-footer">
+          <div className="footer-container">
+            <div className="footer-content">
+              <div className="footer-section">
+                <h3>SalaryLock</h3>
+                <p>Private salary negotiations powered by FHEVM technology</p>
+              </div>
+              <div className="footer-section">
+                <h4>Network</h4>
+                <p>Sepolia Testnet (Chain ID: 11155111)</p>
+                <p className="footer-note">All transactions require wallet signature</p>
+              </div>
+              <div className="footer-section">
+                <h4>Connect</h4>
+                <div className="social-links">
+                  <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="social-link">
+                    Discord: DJ Rmanello
+                  </a>
+                  <a href="https://x.com/rmanellooo" target="_blank" rel="noopener noreferrer" className="social-link">
+                    X: @rmanellooo
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <p>Built with ❤️ using <a href="https://v0.dev" target="_blank" rel="noopener noreferrer">v0</a></p>
+            </div>
+          </div>
+        </footer>
       </div>
     </Router>
   );

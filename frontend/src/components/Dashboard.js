@@ -41,14 +41,14 @@ const Dashboard = ({ instance, provider, publicKey, account, contractAddresses }
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Dashboard</h1>
-        <p>Welcome to your private salary negotiation platform</p>
+        <p>Private salary negotiations at your fingertips</p>
       </div>
 
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">💼</div>
           <div className="stat-content">
-            <h3>My Jobs</h3>
+            <h3>Active Listings</h3>
             <p className="stat-value">{stats.myJobs}</p>
           </div>
         </div>
@@ -56,7 +56,7 @@ const Dashboard = ({ instance, provider, publicKey, account, contractAddresses }
         <div className="stat-card">
           <div className="stat-icon">📝</div>
           <div className="stat-content">
-            <h3>My Applications</h3>
+            <h3>Applications</h3>
             <p className="stat-value">{stats.myApplications}</p>
           </div>
         </div>
@@ -64,7 +64,7 @@ const Dashboard = ({ instance, provider, publicKey, account, contractAddresses }
         <div className="stat-card">
           <div className="stat-icon">🤝</div>
           <div className="stat-content">
-            <h3>Active Negotiations</h3>
+            <h3>Negotiations</h3>
             <p className="stat-value">{stats.activeNegotiations}</p>
           </div>
         </div>
@@ -72,38 +72,47 @@ const Dashboard = ({ instance, provider, publicKey, account, contractAddresses }
 
       <div className="info-section">
         <div className="card">
-          <h2>🔐 How It Works</h2>
+          <h2>How It Works</h2>
           <div className="info-content">
             <div className="info-item">
-              <h3>1. Create or Apply</h3>
-              <p>Employers create job listings with encrypted salary ranges. Candidates apply with encrypted expectations.</p>
+              <div className="step-number">STEP 01</div>
+              <h3>Post or Apply</h3>
+              <p>Employers post encrypted ranges. Candidates apply with encrypted expectations.</p>
             </div>
             <div className="info-item">
-              <h3>2. Private Matching</h3>
-              <p>Our FHE system matches candidates to jobs based on encrypted ranges without revealing individual values.</p>
+              <div className="step-number">STEP 02</div>
+              <h3>Private Matching</h3>
+              <p>Our FHE system matches candidates without revealing individual salary values.</p>
             </div>
             <div className="info-item">
-              <h3>3. Secure Negotiation</h3>
-              <p>After matching, parties can negotiate with encrypted offers. No one sees values until both agree.</p>
+              <div className="step-number">STEP 03</div>
+              <h3>Secure Negotiation</h3>
+              <p>Negotiate encrypted offers. Values remain hidden until mutual agreement.</p>
             </div>
           </div>
         </div>
 
         <div className="card">
-          <h2>📋 Contract Addresses</h2>
+          <h2>Contract Information</h2>
           <div className="address-list">
             <div className="address-item">
-              <strong>JobMarketplace:</strong>
+              <strong>JobMarketplace Contract</strong>
               <code>{contractAddresses.JobMarketplace || 'Not deployed'}</code>
             </div>
             <div className="address-item">
-              <strong>SalaryNegotiation:</strong>
+              <strong>SalaryNegotiation Contract</strong>
               <code>{contractAddresses.SalaryNegotiation || 'Not deployed'}</code>
             </div>
-            <div className="address-item">
-              <strong>FHEToken:</strong>
-              <code>{contractAddresses.FHEToken || 'Not deployed'}</code>
-            </div>
+            {contractAddresses.FHEToken && (
+              <div className="address-item">
+                <strong>FHEToken Contract</strong>
+                <code>{contractAddresses.FHEToken}</code>
+              </div>
+            )}
+          </div>
+          <div className="network-info">
+            <p><strong>Network:</strong> Sepolia Testnet (Chain ID: 11155111)</p>
+            <p className="network-note">All transactions require wallet signature</p>
           </div>
         </div>
       </div>
