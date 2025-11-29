@@ -28,6 +28,7 @@ const JobMarketplace = ({ instance, provider, publicKey, account, contractAddres
     if (account && contractAddresses.JobMarketplace) {
       loadJobs();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, contractAddresses]);
 
   const loadJobs = async () => {

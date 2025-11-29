@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import './Dashboard.css';
 
 const Dashboard = ({ instance, provider, publicKey, account, contractAddresses }) => {

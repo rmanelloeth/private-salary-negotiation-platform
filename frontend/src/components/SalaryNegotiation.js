@@ -13,6 +13,7 @@ const SalaryNegotiation = ({ instance, provider, publicKey, account, contractAdd
     if (account && contractAddresses.SalaryNegotiation) {
       loadNegotiations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, contractAddresses]);
 
   const loadNegotiations = async () => {
